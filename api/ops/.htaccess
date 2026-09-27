@@ -1,0 +1,8 @@
+# The ops endpoints MUST stay reachable over HTTPS — they replace SSH.
+# They protect themselves with a constant-time key comparison and refuse to
+# run when no key is configured. Only non-PHP files are denied here.
+<FilesMatch "(?i)\.(sql|log|bak|old|local|example|md|ini|env)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes

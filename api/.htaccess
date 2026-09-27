@@ -1,0 +1,55 @@
+# Route everything that is not a real file to the front controller.
+RewriteEngine On
+
+# Apache strips the Authorization header under CGI/FastCGI unless it is
+# forwarded explicitly. Without this, every Bearer request looks unauthenticated.
+RewriteCond %{HTTP:Authorization} ^(.+)$
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+# ---------------------------------------------------------------------------
+# Deny sensitive files by PATTERN, never by exact filename.
+#
+# Why the patterns are this broad: a deny list of exact filenames matches
+# nothing the moment a file is uploaded under a near-miss name. A config
+# uploaded as `config.local` — no .php extension — is not executed by PHP, so
+# Apache serves it as text/plain, live database password and all. The rules
+# below match on the *stem* as well as the extension, so a missing or wrong
+# extension is still denied.
+# ---------------------------------------------------------------------------
+
+# Anything whose name starts with config or env, with or without an extension:
+#   config.php  config.local  config.php.bak  .env  env.backup  configuration
+<FilesMatch "(?i)^\.?(config|env)">
+    Require all denied
+</FilesMatch>
+
+# Anything that *contains* config or env before an extension, e.g. db-config.inc
+<FilesMatch "(?i)(^|[._-])(config|env|secret|credential|password)([._-]|$)">
+    Require all denied
+</FilesMatch>
+
+# Data, backups, logs and templates — extension present or not.
+<FilesMatch "(?i)\.(sql|sqlite|db|dump|bak|backup|old|orig|save|swp|log|ini|env|local|example|sample|dist|tpl|md|yml|yaml|lock|sh)($|\.)">
+    Require all denied
+</FilesMatch>
+
+# Version control and dependency metadata, if any ever lands here.
+<FilesMatch "(?i)^(\.git|\.htpasswd|composer\.|package\.|\.ds_store)">
+    Require all denied
+</FilesMatch>
+
+# The migrations directory holds schema SQL; nothing in it is ever web-readable.
+RedirectMatch 404 (?i)^/.*/api/migrations(/|$)
+
+# Uploaded source material (PDFs, text files, recordings). Reachable only
+# through /v1/sources/{id}/file, which checks ownership first. The directory
+# writes its own deny-all .htaccess when it is created; this is the second lock
+# on the same door, in case that file is ever lost to a careless FTP sync.
+RedirectMatch 404 (?i)^/.*/api/storage(/|$)
+
+# Directory listings would reveal exactly these filenames.
+Options -Indexes

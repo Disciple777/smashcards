@@ -1,0 +1,4 @@
+# Nothing in lib/ is an entry point. These files only define classes, so
+# requesting one directly returns an empty 200 today — harmless, but there is
+# no reason for them to be reachable at all. Deny the whole directory.
+Require all denied

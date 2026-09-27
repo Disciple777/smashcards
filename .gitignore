@@ -1,0 +1,26 @@
+# Secrets — never commit
+api/config.php
+.env.deploy
+
+# Windows editors silently append extensions to dotfiles; catch the near-misses
+# so a filled-in copy can never be committed under a slightly different name.
+.env.deploy.*
+!.env.deploy.example
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Env
+.env
+.env.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

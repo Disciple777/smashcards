@@ -1,0 +1,45 @@
+# Client-side routing for the React app at /smashcards/.
+#
+# Without this, reloading a deep link such as /smashcards/decks/4/study asks
+# Apache for a directory that does not exist and returns 404. Anything that is
+# not a real file or directory is served index.html, and React Router takes over.
+#
+# The api/ directory is a real directory, so the conditions below never rewrite
+# it and its own .htaccess keeps handling the API.
+
+RewriteEngine On
+RewriteBase /smashcards/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]
+
+# This server does not know the .mjs extension and serves it as text/plain.
+# Browsers enforce strict MIME checking on module scripts, so pdf.js's worker
+# (shipped only as .mjs) was rejected — and so was its own fallback, which
+# imports the same file — leaving PDF text extraction dead in production while
+# working perfectly in dev, where Vite sets the type itself.
+AddType text/javascript .mjs .js
+
+# Apache does not know .webmanifest out of the box and serves it as
+# text/plain, which Chrome refuses — the app then has no installable icon and
+# no name on a home screen, with nothing in the console to say why.
+AddType application/manifest+json .webmanifest
+AddType image/svg+xml .svg
+
+# Hashed asset filenames change on every build, so they can be cached hard.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+</IfModule>
+
+# index.html must never be cached, or a stale one keeps pointing at old assets.
+<FilesMatch "index\.html$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-cache, must-revalidate"
+    </IfModule>
+</FilesMatch>
+
+Options -Indexes

@@ -1,0 +1,3 @@
+# Schema SQL. Never web-readable: it maps every table and column in the
+# database. The migration runner reads these from disk, not over HTTP.
+Require all denied

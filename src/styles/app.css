@@ -1,0 +1,895 @@
+/* Mobile-first. The study screen is designed to be usable one-handed,
+   with touch targets large enough to hit without looking. */
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #2563eb;
+  --primary-text: #ffffff;
+  --danger: #dc2626;
+  --due: #b45309;
+  --new: #047857;
+  --radius: 12px;
+  --gap: 1rem;
+}
+
+/* ------------------------------------------------------------------ themes
+
+   Every palette is one block of the same ten variables, and nothing else in
+   this file knows which theme is on.
+
+   The selector is `[data-theme="…"]` rather than `:root[data-theme="…"]` on
+   purpose: it matches *any* element, so the theme picker's swatches can carry
+   the attribute themselves and render in the palette's genuine colours. A
+   preview built from a second copy of the hex codes would drift; this one
+   cannot.
+
+   No attribute at all means "follow the device", which is what keeps the
+   prefers-color-scheme block below meaningful. The `:not([data-theme])` guard
+   is what stops a device in dark mode from overriding a light theme the user
+   deliberately picked. */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #0b0f19;
+    --surface: #151a26;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --border: #252c3b;
+    --primary: #3b82f6;
+    --danger: #f87171;
+    --due: #fbbf24;
+    --new: #34d399;
+  }
+}
+
+/* Light ------------------------------------------------------------------ */
+
+[data-theme="daylight"] {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #2563eb;
+  --primary-text: #ffffff;
+  --danger: #dc2626;
+  --due: #b45309;
+  --new: #047857;
+}
+
+[data-theme="parchment"] {
+  --bg: #f5efe3;
+  --surface: #fffaf1;
+  --text: #3b2f22;
+  --muted: #857a6a;
+  --border: #e3d9c6;
+  --primary: #a8552b;
+  --primary-text: #fffaf1;
+  --danger: #b3261e;
+  --due: #a15c07;
+  --new: #4f6b2a;
+}
+
+[data-theme="meadow"] {
+  --bg: #eef6f1;
+  --surface: #ffffff;
+  --text: #10241b;
+  --muted: #5c7468;
+  --border: #d3e6da;
+  --primary: #0f766e;
+  --primary-text: #ffffff;
+  --danger: #b91c1c;
+  --due: #a16207;
+  --new: #15803d;
+}
+
+[data-theme="blossom"] {
+  --bg: #fdf2f6;
+  --surface: #fffafc;
+  --text: #33131f;
+  --muted: #8a6675;
+  --border: #f2d7e2;
+  --primary: #be185d;
+  --primary-text: #fffafc;
+  --danger: #c2261e;
+  --due: #b45309;
+  --new: #047857;
+}
+
+/* Dark ------------------------------------------------------------------- */
+
+[data-theme="midnight"] {
+  --bg: #0b0f19;
+  --surface: #151a26;
+  --text: #f3f4f6;
+  --muted: #9ca3af;
+  --border: #252c3b;
+  --primary: #3b82f6;
+  --primary-text: #ffffff;
+  --danger: #f87171;
+  --due: #fbbf24;
+  --new: #34d399;
+}
+
+[data-theme="nebula"] {
+  --bg: #12091f;
+  --surface: #1d1130;
+  --text: #ece8f6;
+  --muted: #a99cc2;
+  --border: #33244d;
+  --primary: #a855f7;
+  --primary-text: #ffffff;
+  --danger: #fb7185;
+  --due: #fbbf24;
+  --new: #4ade80;
+}
+
+[data-theme="forest"] {
+  --bg: #071410;
+  --surface: #0f1f19;
+  --text: #e6f2ec;
+  --muted: #93aba0;
+  --border: #1d3329;
+  --primary: #34d399;
+  /* A light primary needs dark text on it, or the Study button is unreadable. */
+  --primary-text: #062018;
+  --danger: #fb7185;
+  --due: #fcd34d;
+  --new: #6ee7b7;
+}
+
+[data-theme="carbon"] {
+  --bg: #121212;
+  --surface: #1c1c1c;
+  --text: #ededed;
+  --muted: #a1a1a1;
+  --border: #2e2e2e;
+  --primary: #f59e0b;
+  --primary-text: #1a1200;
+  --danger: #f87171;
+  --due: #fbbf24;
+  --new: #4ade80;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2 { line-height: 1.2; margin: 0; }
+h1 { font-size: 1.5rem; }
+
+.screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* Keep content clear of the iOS home indicator and notch. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.screen--centered {
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap);
+  padding: var(--gap);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: var(--gap);
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding: 0.75rem var(--gap);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar__title {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 1.125rem;
+  font-weight: 600;
+  /* A long deck title must not push the Study button off screen. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar__actions { display: flex; align-items: center; gap: 0.75rem; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap);
+}
+
+.stack { display: flex; flex-direction: column; gap: 0.75rem; width: min(28rem, 100%); }
+/* The narrow 28rem cap suits a centered dialog (auth, session summary) but
+   made the deck editor's forms visibly narrower than the card list below
+   them, which shares the content column's full 42rem. Opt out there. */
+.stack--full { width: 100%; }
+.row { display: flex; gap: 0.5rem; align-items: center; }
+.row input { flex: 1; }
+
+.muted { color: var(--muted); margin: 0; }
+.section-title { font-size: 1rem; font-weight: 600; }
+
+.field { display: flex; flex-direction: column; gap: 0.25rem; border: 0; padding: 0; margin: 0; }
+.field > span, .field > legend { font-size: 0.875rem; color: var(--muted); }
+.field__error { color: var(--danger); font-size: 0.8125rem; font-style: normal; }
+
+input, textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.625rem 0.75rem;
+  width: 100%;
+  /* 16px minimum stops iOS Safari zooming the page on focus. */
+  font-size: max(1rem, 16px);
+}
+
+input:focus-visible, textarea:focus-visible, .button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+textarea { resize: vertical; }
+
+.choice { display: flex; align-items: center; gap: 0.5rem; }
+.choice input { width: auto; }
+
+.button {
+  font: inherit;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.625rem 1rem;
+  min-height: 44px;           /* Apple's minimum comfortable touch target */
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Spaces a leading icon from its label without needing a margin rule per
+     context — an icon-only button has nothing to gap against, so it is safe. */
+  gap: 0.35rem;
+}
+
+.button--primary { background: var(--primary); color: var(--primary-text); border-color: transparent; }
+.button--large { min-height: 56px; font-size: 1.0625rem; }
+.button--link { background: none; border: none; color: var(--primary); padding: 0.25rem 0.5rem; }
+.button--danger { color: var(--danger); }
+.button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.alert {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 0.625rem 0.75rem;
+  margin: 0;
+}
+
+.auth { width: min(24rem, 100%); display: flex; flex-direction: column; gap: 0.75rem; }
+.auth__title { text-align: center; }
+
+/* ------------------------------------------------------------- main menu */
+
+.menu { padding-top: calc(var(--gap) * 2); }
+
+.menu__choice {
+  display: grid;
+  /* Icon in its own column, spanning both text rows, so the label and hint
+     align with each other rather than around the icon. */
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.9rem;
+  align-items: center;
+  padding: var(--gap);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+}
+.menu__choice:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+}
+
+.menu__icon { grid-row: 1 / 3; color: var(--primary); }
+.menu__label { font-size: 1.125rem; font-weight: 600; }
+.menu__hint { font-size: 0.875rem; color: var(--muted); }
+
+.deck-list, .card-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.deck { display: flex; align-items: center; justify-content: space-between; gap: var(--gap); }
+/* flex: 1 so the title starts at the left of the row, like a folder's does —
+   without it, space-between parks this block in the middle. */
+.deck__main { flex: 1; min-width: 0; }
+.deck__title { font-weight: 600; color: var(--text); text-decoration: none; font-size: 1.0625rem; }
+.deck__counts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--muted); }
+.deck__actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.deck__actions select { width: auto; max-width: 9rem; }
+
+/* ------------------------------------------------------------- folders */
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+.breadcrumbs a { color: var(--primary); text-decoration: none; }
+.breadcrumbs a:hover { text-decoration: underline; }
+.breadcrumbs__current { color: var(--text) !important; font-weight: 600; pointer-events: none; text-decoration: none !important; }
+.breadcrumbs__sep { color: var(--muted); margin: 0 0.25rem; }
+
+.folder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.folder-row { display: flex; align-items: center; justify-content: space-between; gap: var(--gap); flex-wrap: wrap; }
+.folder-row__main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
+  flex: 1;
+}
+.folder-row__icon { color: var(--primary); flex-shrink: 0; }
+.folder-row__name { font-weight: 600; font-size: 1.0625rem; }
+.folder-row__actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; flex-wrap: wrap; }
+.folder-row__actions select { width: auto; max-width: 9rem; }
+
+/* -------------------------------------------------------- drag and drop */
+
+.drag-handle {
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  cursor: grab;
+  flex-shrink: 0;
+  touch-action: none;
+}
+.drag-handle:active { cursor: grabbing; }
+
+.is-dragging { opacity: 0.4; }
+
+.folder-row.drag-over,
+.breadcrumbs a.drag-over {
+  outline: 2px dashed var(--primary);
+  outline-offset: 2px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.pill { border-radius: 999px; padding: 0 0.5rem; font-weight: 600; }
+.pill--due { color: var(--due); background: color-mix(in srgb, var(--due) 15%, transparent); }
+.pill--new { color: var(--new); background: color-mix(in srgb, var(--new) 15%, transparent); }
+
+.card-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.card-row--editing { display: block; }
+.card-row--editing .card-row__actions { justify-content: flex-start; }
+.card-row__text { display: flex; flex-direction: column; min-width: 0; }
+.card-row__actions { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
+
+/* -------------------------------------------------- study material (sources) */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tabs__tab:hover { color: var(--text); }
+.tabs__tab--active {
+  color: var(--primary);
+  border-color: var(--border);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.source-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.source {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+
+.source__head { display: flex; align-items: flex-start; gap: 0.5rem; }
+.source__icon { color: var(--primary); flex-shrink: 0; margin-top: 0.15rem; }
+.source__main { min-width: 0; flex: 1; }
+.source__title {
+  margin: 0;
+  font-weight: 600;
+  /* A pasted chapter's first line becomes its title and can be very long. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.source__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.source__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.source__body { margin-top: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+.source__audio { width: 100%; margin-bottom: 0.75rem; }
+
+.source__text {
+  margin: 0;
+  max-height: 22rem;
+  overflow: auto;
+  /* A transcript arrives as one long paragraph; wrap it rather than letting it
+     scroll sideways, but keep the newlines a pasted document came with. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------ study view */
+
+.study { justify-content: space-between; gap: var(--gap); padding-bottom: var(--gap); }
+
+.study__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem var(--gap);
+}
+
+.study__card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+  margin: 0 var(--gap);
+  padding: var(--gap);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.study__question { font-size: 1.5rem; font-weight: 600; margin: 0; }
+
+.study__answer {
+  font-size: 1.25rem;
+  margin: 0;
+  padding-top: var(--gap);
+  border-top: 1px solid var(--border);
+  width: 100%;
+  color: var(--muted);
+}
+
+.study__ratings {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding: 0 var(--gap);
+}
+
+.button--rating { min-height: 60px; flex-direction: column; gap: 0.125rem; font-size: 0.9375rem; }
+.button--rating-1 { color: var(--danger); border-color: var(--danger); }
+.button--rating-4 { color: var(--new); }
+
+.button--rating__label { font-weight: 600; }
+.button--rating__sub {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.2;
+}
+/* The sublabel should read at the same color as the button on Again/Easy,
+   not the muted grey used for the neutral Hard/Good buttons. */
+.button--rating-1 .button--rating__sub,
+.button--rating-4 .button--rating__sub { color: inherit; opacity: 0.75; }
+
+/* The rating a typed-answer match suggests — still just a suggestion, the
+   user taps to confirm, so this is a highlight, not a pre-selected state. */
+.button--rating-suggested {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.study__type-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0 var(--gap);
+}
+.study__type-answer input { text-align: center; font-size: 1.0625rem; }
+.study__type-answer__actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
+
+.study__match { padding: 0 var(--gap); text-align: center; }
+.study__match-score { font-weight: 600; margin: 0.125rem 0 0; }
+.study__match-score--1 { color: var(--danger); }
+.study__match-score--2 { color: var(--muted); }
+.study__match-score--3 { color: var(--text); }
+.study__match-score--4 { color: var(--new); }
+
+.study > .button--large { margin: 0 var(--gap); }
+
+@media (min-width: 40rem) {
+  .study__question { font-size: 2rem; }
+  .study__answer { font-size: 1.5rem; }
+}
+
+/* ---------------------------------------------------- phase 2 additions */
+
+select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.625rem 0.75rem;
+  width: 100%;
+  font-size: max(1rem, 16px);
+}
+
+input[type="range"] { padding: 0; accent-color: var(--primary); }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--primary); }
+
+.rule { border: 0; border-top: 1px solid var(--border); width: 100%; margin: 0.25rem 0; }
+
+.settings-grid { display: grid; gap: 0.75rem; }
+@media (min-width: 30rem) { .settings-grid { grid-template-columns: 1fr 1fr; } }
+
+.voice-entry { display: flex; flex-direction: column; gap: 0.5rem; }
+.voice-entry__buttons { display: flex; gap: 0.5rem; }
+.voice-entry__buttons .button { flex: 1; }
+.voice-entry__hint, .voice-entry__unsupported { font-size: 0.8125rem; }
+
+.button--listening {
+  border-color: var(--danger);
+  color: var(--danger);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse { 50% { opacity: 0.55; } }
+
+/* Respect users who have asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .button--listening { animation: none; }
+}
+
+.study__handsfree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 var(--gap);
+}
+
+.study__listening {
+  color: var(--danger);
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study__listening { animation: none; }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 0;
+  width: 100%;
+}
+
+.stats__item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.625rem;
+  text-align: center;
+}
+
+.stats dt { font-size: 0.8125rem; color: var(--muted); }
+.stats dd { margin: 0.125rem 0 0; font-size: 1.25rem; font-weight: 600; }
+
+/* ------------------------------------------------ phase 3: AI staging */
+
+.staged__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.staged__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.staged__actions .button { flex: 1; min-width: 12rem; }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+}
+
+/* ------------------------------------------------------------ theme picker */
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  min-height: 44px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 10px;
+  /* Painted from the palette this button carries, not the page's. */
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.theme-option--active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary) inset;
+}
+
+.theme-option__preview {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.theme-option__dot { width: 10px; height: 10px; border-radius: 999px; }
+.theme-option__dot--surface { background: var(--text); }
+.theme-option__dot--primary { background: var(--primary); margin-left: -3px; }
+.theme-option__dot--new { background: var(--new); margin-left: -3px; }
+
+.theme-option__label {
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Match my device" has no palette of its own, so it shows the two device
+   defaults side by side rather than borrowing whatever theme is currently on. */
+.theme-option--auto .theme-option__preview {
+  background: linear-gradient(135deg, #f6f7f9 50%, #0b0f19 50%);
+}
+.theme-option--auto .theme-option__dot--surface { background: #111827; }
+.theme-option--auto .theme-option__dot--primary { background: #2563eb; }
+.theme-option--auto .theme-option__dot--new { background: #34d399; }
+
+/* -------------------------------------------------- deck editor sections */
+
+.section-bar {
+  position: sticky;
+  /* Parks directly *below* the topbar, which is itself sticky at top: 0 — at
+     0 the two would occupy the same strip and the bar would disappear under
+     it the moment the page scrolled. The offset is the topbar's own height:
+     a 44px button (the minimum touch target) plus its 0.75rem of padding
+     top and bottom. */
+  top: calc(44px + 1.5rem);
+  z-index: 9;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.section-bar__inner {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.4rem var(--gap);
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  /* Five sections do not fit across a small phone. Scrolling the bar keeps
+     every section one gesture away; wrapping it would push the content down
+     by a whole row on exactly the screens with the least room. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.section-bar__inner::-webkit-scrollbar { display: none; }
+
+.section-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1 0 auto;
+  justify-content: center;
+  padding: 0.5rem 0.7rem;
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.section-tab:hover { color: var(--text); }
+
+.section-tab--active {
+  color: var(--primary);
+  border-color: var(--border);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* Five sections plus their icons overflow a small phone. Tightening the
+   padding fits them all on a 390px screen, which is worth more than the
+   breathing room: a section you have to scroll a bar to discover is one most
+   people never find. */
+@media (max-width: 30rem) {
+  .section-bar__inner { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .section-tab { padding: 0.5rem 0.35rem; font-size: 0.875rem; gap: 0.25rem; }
+}
+
+.section-tab__badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.2rem 0.4rem;
+  border-radius: 999px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+.section-tab--active .section-tab__badge {
+  color: var(--primary-text);
+  background: var(--primary);
+}
+
+/* --------------------------------------------------------- text importer */
+
+.parser-example {
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.parser-errors {
+  list-style: none;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--due);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--due) 12%, transparent);
+  color: var(--due);
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.parser-preview { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.parser-preview__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  /* A pasted answer keeps its newlines; show them rather than running the
+     lines together in the preview. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------ deck split */
+
+.split-preview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.split-preview li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0.625rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+}
+.split-preview a { color: var(--primary); }
