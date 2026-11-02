@@ -6,6 +6,7 @@ import DeckList from './components/DeckList.jsx';
 import MainMenu from './components/MainMenu.jsx';
 import NewDeck from './components/NewDeck.jsx';
 import PublicDecks from './components/PublicDecks.jsx';
+import Settings from './components/Settings.jsx';
 import SharedDeck from './components/SharedDeck.jsx';
 import StudySession from './components/StudySession.jsx';
 import { useAuth } from './hooks/useAuth.jsx';
@@ -32,6 +33,7 @@ export default function App() {
       <Route path="/new" element={<NewDeck />} />
       <Route path="/folders/:folderId" element={<DeckList />} />
       <Route path="/browse" element={<PublicDecks />} />
+      <Route path="/settings" element={<Settings />} />
       <Route path="/shared/:token" element={<SharedDeck />} />
       <Route path="/decks/:deckId" element={<DeckEditor />} />
       <Route path="/decks/:deckId/study" element={<StudySession />} />

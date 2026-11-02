@@ -142,6 +142,53 @@
   --new: #6ee7b7;
 }
 
+/* Three greys with one accent each. The greys are deliberately neutral — no
+   colour cast in the surfaces — so the accent is the only hue on the screen
+   and reads as a highlight rather than a tint. "Cyber" is Forest's green on
+   that neutral grey instead of Forest's green-tinted surfaces. */
+
+[data-theme="cyber"] {
+  --bg: #101113;
+  --surface: #1a1c1f;
+  --text: #e8eaed;
+  --muted: #9aa0a6;
+  --border: #2a2d31;
+  --primary: #22e584;
+  --primary-text: #06130c;
+  --danger: #ff6b6b;
+  --due: #fcd34d;
+  --new: #22e584;
+}
+
+[data-theme="violet"] {
+  --bg: #111013;
+  --surface: #1b1a1f;
+  --text: #ebe9ef;
+  --muted: #a09aa8;
+  --border: #2c2a33;
+  --primary: #a78bfa;
+  --primary-text: #16101f;
+  --danger: #fb7185;
+  --due: #fbbf24;
+  --new: #6ee7b7;
+}
+
+[data-theme="cherry"] {
+  --bg: #121011;
+  --surface: #1d1a1c;
+  --text: #f0eaec;
+  --muted: #a79aa0;
+  --border: #332c2f;
+  /* The lighter cherry, not the deep one: a primary is both a filled button
+     and a link on a dark background, and #e11d48 passes as a button fill but
+     fails as link text here. */
+  --primary: #fb7185;
+  --primary-text: #2b0a12;
+  --danger: #f87171;
+  --due: #fbbf24;
+  --new: #4ade80;
+}
+
 [data-theme="carbon"] {
   --bg: #121212;
   --surface: #1c1c1c;
@@ -302,9 +349,102 @@ textarea { resize: vertical; }
 .auth { width: min(24rem, 100%); display: flex; flex-direction: column; gap: 0.75rem; }
 .auth__title { text-align: center; }
 
+/* -------------------------------------------------------------- the brand */
+
+/* A soft wash of the theme's own accent behind everything.
+
+   Fixed and behind the content (the body's background colour paints the page
+   canvas, which sits behind a negative z-index pseudo-element), so it does not
+   scroll, cannot be clicked through to, and costs nothing on screens whose
+   bars are opaque anyway. Built from the theme variables, so every palette
+   gets a wash in its own hue without a second set of colours to maintain. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38rem 26rem at 10% -10%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 70%),
+    radial-gradient(32rem 24rem at 100% 2%, color-mix(in srgb, var(--new) 10%, transparent), transparent 70%);
+}
+
+.screen--hero .content { gap: calc(var(--gap) * 1.25); }
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: clamp(1.5rem, 7vh, 3.5rem) 0 clamp(1rem, 4vh, 2rem);
+  text-align: center;
+}
+
+.brand__mark {
+  width: clamp(56px, 16vw, 72px);
+  height: auto;
+  /* The mark's body is currentColor, so it wears the theme. */
+  color: var(--primary);
+  border-radius: 22%;
+  /* A halo in the accent colour: it lifts the mark off the background on the
+     dark themes and keeps it from floating on the light ones. */
+  box-shadow: 0 10px 30px -8px color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.brand__title {
+  margin: 0.5rem 0 0;
+  font-size: clamp(2rem, 9vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.brand__title-em { color: var(--primary); }
+
+.brand__tagline { color: var(--muted); margin: 0; font-size: 0.9375rem; }
+
+/* ------------------------------------------------------------- user menu */
+
+/* No bar, no border: on the menu the only thing up here is the user, and a
+   full topbar for one name drew a line across the top of the brand. */
+.topbar--floating {
+  background: none;
+  border-bottom: 0;
+  position: static;
+  justify-content: flex-end;
+}
+
+.user-menu { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+
+.user-menu__name {
+  color: var(--muted);
+  font-size: 0.9375rem;
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+.icon-button:hover { color: var(--primary); border-color: var(--primary); }
+.icon-button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
 /* ------------------------------------------------------------- main menu */
 
-.menu { padding-top: calc(var(--gap) * 2); }
+.menu { padding-top: 0; }
+.menu__choices { display: flex; flex-direction: column; gap: 0.75rem; }
 
 .menu__choice {
   display: grid;
@@ -325,6 +465,7 @@ textarea { resize: vertical; }
   border-color: var(--primary);
   background: color-mix(in srgb, var(--primary) 6%, var(--surface));
 }
+.menu__choice:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .menu__icon { grid-row: 1 / 3; color: var(--primary); }
 .menu__label { font-size: 1.125rem; font-weight: 600; }
@@ -340,6 +481,21 @@ textarea { resize: vertical; }
 .deck__counts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--muted); }
 .deck__actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 .deck__actions select { width: auto; max-width: 9rem; }
+
+/* On a phone the three actions and the deck's own details fought for the same
+   row, which wrapped the title to two lines and left the buttons in a ragged
+   block. Below this width the row becomes two: what the deck *is*, then what
+   you can do with it. */
+@media (max-width: 34rem) {
+  .deck { flex-wrap: wrap; }
+  .deck__actions {
+    flex-basis: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+}
 
 /* ------------------------------------------------------------- folders */
 
@@ -893,3 +1049,24 @@ code {
   font-size: 0.9375rem;
 }
 .split-preview a { color: var(--primary); }
+
+/* ------------------------------------------------------- settings: facts */
+
+.facts { margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.facts__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.facts dt { color: var(--muted); font-size: 0.875rem; }
+.facts dd {
+  margin: 0;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

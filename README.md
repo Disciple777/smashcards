@@ -29,9 +29,10 @@ one of the three providers (Claude, OpenAI, DeepSeek). See [ROADMAP.md](ROADMAP.
 /src                 React app
   main.jsx           entry; BrowserRouter basename=/smashcards
   App.jsx            routes
-  /components        AuthScreen, DeckList, DeckEditor, DeckSettings,
-                     VoiceCardEntry, StudySession, SessionSummary,
-                     TextImport, SplitDeck, ThemePicker, Icon
+  /components        AuthScreen, MainMenu, Settings, DeckList, DeckEditor,
+                     DeckSettings, VoiceCardEntry, StudySession,
+                     SessionSummary, TextImport, SplitDeck, ThemePicker,
+                     BrandHeader, UserMenu, Icon
   /hooks             useAuth
   /services          ApiClient (tokens + silent refresh), SpeechService,
                      settings, theme, cardParser, deckSplit
@@ -113,10 +114,19 @@ Errors are uniform:
 Access tokens last 15 minutes, refresh tokens 30 days. Both are HS256 and carry
 a `typ` claim, so a refresh token is rejected where an access token is expected.
 
+## Screens
+
+The main menu is the app's identity and three doors — open a deck, new deck,
+browse public decks — and nothing else. Everything about *you* rather than
+your cards lives behind the cog beside your name in the top bar: `/settings`
+holds the theme picker, your account details, and both ways to sign out. The
+login screen wears the same mark and wordmark, so the first screen and the
+home screen are recognisably one app.
+
 ## Themes
 
-Nine palettes — four light, four dark, plus "match my device" — chosen on the
-main menu and kept per device in localStorage.
+Twelve palettes — four light, seven dark, plus "match my device" — chosen in
+Settings and kept per device in localStorage.
 
 Each palette is one block of the same ten CSS variables in `app.css`, and
 nothing else in the stylesheet knows which is on. The selector is

@@ -29,6 +29,9 @@ export const THEMES = Object.freeze([
   { id: 'nebula', label: 'Nebula', mode: 'dark' },
   { id: 'forest', label: 'Forest', mode: 'dark' },
   { id: 'carbon', label: 'Carbon', mode: 'dark' },
+  { id: 'cyber', label: 'Cyber', mode: 'dark' },
+  { id: 'violet', label: 'Violet', mode: 'dark' },
+  { id: 'cherry', label: 'Cherry', mode: 'dark' },
 ]);
 
 const IDS = new Set(THEMES.map((theme) => theme.id));

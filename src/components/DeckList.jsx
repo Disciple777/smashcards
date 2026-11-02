@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import FolderPicker from './FolderPicker.jsx';
 import Icon from './Icon.jsx';
+import UserMenu from './UserMenu.jsx';
 import { api } from '../services/ApiClient.js';
 import {
   breadcrumbPath,
@@ -11,7 +12,6 @@ import {
   decksInFolderRecursive,
   isSelfOrDescendant,
 } from '../services/folderTree.js';
-import { useAuth } from '../hooks/useAuth.jsx';
 
 /** Drop targets: every folder id, plus this sentinel for the root ("All decks"). */
 const ROOT = 'root';
@@ -29,7 +29,8 @@ const ROOT = 'root';
  * drag-and-drop mostly does not.
  */
 export default function DeckList() {
-  const { user, logout } = useAuth();
+  // The signed-in user is shown by UserMenu; this screen itself needs nothing
+  // from the auth context any more.
   const { folderId: folderIdParam } = useParams();
 
   // A malformed id in the URL is treated as root rather than crashing the tree walk.
@@ -209,10 +210,7 @@ export default function DeckList() {
       <header className="topbar">
         <Link className="button button--link" to="/">← Menu</Link>
         <h1 className="topbar__title">Your decks</h1>
-        <div className="topbar__actions">
-          <span className="muted">{user.display_name}</span>
-          <button className="button button--link" type="button" onClick={logout}>Log out</button>
-        </div>
+        <UserMenu />
       </header>
 
       <main className="content">

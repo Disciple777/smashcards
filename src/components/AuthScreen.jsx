@@ -1,4 +1,6 @@
 import { useState } from 'react';
+
+import BrandHeader from './BrandHeader.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 
 export default function AuthScreen() {
@@ -35,11 +37,12 @@ export default function AuthScreen() {
   }
 
   return (
-    <div className="screen screen--centered">
-      <form className="card auth" onSubmit={handleSubmit} noValidate>
-        <h1 className="auth__title">Smashcards</h1>
-        <p className="muted">Flashcards you can study by ear.</p>
+    /* The same name and mark the signed-in menu shows, so the first screen
+       and the home screen are recognisably one app. */
+    <div className="screen screen--centered screen--hero">
+      <BrandHeader />
 
+      <form className="card auth" onSubmit={handleSubmit} noValidate>
         {isRegister && (
           <label className="field">
             <span>Name</span>
